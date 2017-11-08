@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # Created on 2017-07-26 10:51:02
 # Project: baidu_calendar
@@ -19,6 +19,7 @@ driver = None
 url = 'http://www.baidu.com/s?' + urllib.urlencode({'wd': '日历'})
 date_pattern = re.compile(r'date="[\d]+[-][\d]+[-][\d]+"')
 
+
 def get_calendar(start_year, end_year):
     holiday_list = []
     date_list = []
@@ -28,8 +29,10 @@ def get_calendar(start_year, end_year):
 
     driver.implicitly_wait(2)
 
-    year_choose_btn = driver.find_element_by_xpath("//div[@class='op-calendar-new-year-box']//div[@class='c-dropdown2-btn-group']")
-    month_choose_btn = driver.find_element_by_xpath("//div[@class='op-calendar-new-month-box']//div[@class='c-dropdown2-btn-group']")
+    year_choose_btn = driver.find_element_by_xpath(
+        "//div[@class='op-calendar-new-year-box']//div[@class='c-dropdown2-btn-group']")
+    month_choose_btn = driver.find_element_by_xpath(
+        "//div[@class='op-calendar-new-month-box']//div[@class='c-dropdown2-btn-group']")
 
     items = driver.find_elements_by_xpath("//ul[@class='c-dropdown2-menubox']")
     years = items[0].find_elements_by_xpath('li')
@@ -48,7 +51,8 @@ def get_calendar(start_year, end_year):
                 sleep(1)
                 html = driver.page_source
                 soup = BeautifulSoup(html, 'lxml')
-                td_div_list = soup.findAll('div',{'class':'op-calendar-new-relative'})
+                td_div_list = soup.findAll(
+                    'div', {'class': 'op-calendar-new-relative'})
                 days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
                 for td_tag in td_div_list:
                     href_tag = str(td_tag.a)
@@ -62,7 +66,8 @@ def get_calendar(start_year, end_year):
                         date = datetime(int(year), int(month), int(day))
                         date_obj = {}
                         date_obj['date'] = '{:%Y%m%d}'.format(date)
-                        date_obj['weekday'] = days[date.weekday()].decode('utf-8')
+                        date_obj['weekday'] = days[date.weekday()
+                                                   ].decode('utf-8')
                         date_obj['week'] = date.weekday() + 1
                         if href_tag.find('op-calendar-new-table-weekend') != -1:
                             date_obj['is_weekend'] = True
@@ -70,7 +75,8 @@ def get_calendar(start_year, end_year):
                             date_obj['is_festival'] = True
                             festival = element.get('title')
                             if festival == None:
-                                festival = element.find('span', class_='op-calendar-new-table-almanac')
+                                festival = element.find(
+                                    'span', class_='op-calendar-new-table-almanac')
                                 festival = festival.text
                             print '{:%Y-%m-%d}'.format(date), festival
                             date_obj['festival'] = festival.strip()
@@ -88,6 +94,7 @@ def get_calendar(start_year, end_year):
         print 'saved to holiday_list.json'
 
     driver.quit()
+
 
 if __name__ == '__main__':
     try:
